@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../mininet')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../scripts')))
 
 from topologies import setup_line_topology, setup_ring_topology, setup_star_topology, setup_mesh_topology, setup_hybrid_topology
 import argparse
