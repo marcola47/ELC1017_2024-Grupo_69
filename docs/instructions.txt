@@ -1,2 +1,2 @@
 create and run topology:
-* sudo python3 mininet/create_topology.py -t line
+* sudo python3 run/create_topology.py -t line
