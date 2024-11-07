@@ -9,8 +9,8 @@ def setup_line_topology():
     net.addController('c0')
 
     # Adiciona nós (roteadores)
-    routers = [net.addSwitch(f'r{i}') for i in range(5)]
-    hosts = [net.addHost(f'h{i}') for i in range(5)]
+    routers = [net.addSwitch('r{}'.format(i)) for i in range(5)]
+    hosts = [net.addHost('h{}'.format(i)) for i in range(5)]
 
     # Cria conexões em linha
     for i in range(4):
@@ -27,8 +27,8 @@ def setup_ring_topology():
     net = Mininet(controller=Controller, link=TCLink, switch=OVSSwitch)
     net.addController('c0')
 
-    routers = [net.addSwitch(f'r{i}') for i in range(5)]
-    hosts = [net.addHost(f'h{i}') for i in range(5)]
+    routers = [net.addSwitch('r{}'.format(i)) for i in range(5)]
+    hosts = [net.addHost('h{}'.format(i)) for i in range(5)]
 
     for i in range(5):
         net.addLink(routers[i], routers[(i + 1) % 5], bw=10)
@@ -43,7 +43,7 @@ def setup_star_topology():
     net.addController('c0')
 
     central_router = net.addSwitch('rc')
-    hosts = [net.addHost(f'h{i}') for i in range(5)]
+    hosts = [net.addHost('h{}'.format(i)) for i in range(5)]
 
     for i in range(5):
         net.addLink(central_router, hosts[i], bw=10)
@@ -56,8 +56,8 @@ def setup_mesh_topology():
     net = Mininet(controller=Controller, link=TCLink, switch=OVSSwitch)
     net.addController('c0')
 
-    routers = [net.addSwitch(f'r{i}') for i in range(4)]
-    hosts = [net.addHost(f'h{i}') for i in range(4)]
+    routers = [net.addSwitch('r{}'.format(i)) for i in range(4)]
+    hosts = [net.addHost('h{}'.format(i)) for i in range(4)]
 
     # Conexão em malha completa entre os roteadores
     for i in range(4):
@@ -77,8 +77,8 @@ def setup_hybrid_topology():
 
     # Roteadores centrais
     central_router = net.addSwitch('rc')
-    sub_routers = [net.addSwitch(f'r{i}') for i in range(3)]
-    hosts = [net.addHost(f'h{i}') for i in range(6)]
+    sub_routers = [net.addSwitch('r{}'.format(i)) for i in range(3)]
+    hosts = [net.addHost('h{}'.format(i)) for i in range(6)]
 
     # Conexão estrela no centro
     for router in sub_routers:
