@@ -1,0 +1,22 @@
+# create_topologies.py
+import argparse
+from topologies import setup_line_topology, setup_ring_topology, setup_star_topology, setup_mesh_topology, setup_hybrid_topology
+
+def main():
+    parser = argparse.ArgumentParser(description="Configuração de topologias no Mininet")
+    parser.add_argument('--topology', choices=['line', 'ring', 'star', 'mesh', 'hybrid'], required=True, help="Tipo de topologia")
+    args = parser.parse_args()
+
+    if args.topology == 'line':
+        setup_line_topology()
+    elif args.topology == 'ring':
+        setup_ring_topology()
+    elif args.topology == 'star':
+        setup_star_topology()
+    elif args.topology == 'mesh':
+        setup_mesh_topology()
+    elif args.topology == 'hybrid':
+        setup_hybrid_topology()
+
+if __name__ == "__main__":
+    main()
