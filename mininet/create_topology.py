@@ -4,7 +4,7 @@ from topologies import setup_line_topology, setup_ring_topology, setup_star_topo
 
 def main():
     parser = argparse.ArgumentParser(description="Configuração de topologias no Mininet")
-    parser.add_argument('-t', choices=['line', 'ring', 'star', 'mesh', 'hybrid'], required=True, help="topology type")
+    parser.add_argument('-t', dest='topology', choices=['line', 'ring', 'star', 'mesh', 'hybrid'], required=True, help="topology type")
     args = parser.parse_args()
 
     if args.topology == 'line':
