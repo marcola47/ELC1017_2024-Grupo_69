@@ -91,17 +91,17 @@ class SpfRouting:
     def get_neighbors(self, host):
         """ Get neighbors of a host and their link costs """
         neighbors = []
-        for link in host.connectionsTo():
-            # Get the connected host from the link
-            neighbor = link[0] if link[1] == host else link[1]
-            # Assume random distances for simplicity. Replace with real link costs if available
-            link_cost = random.randint(1, 10)  # Link cost
-            neighbors.append((neighbor, link_cost))
+        for other_host in self.network.hosts:
+            if host != other_host:
+                # Check if there is a connection between the two hosts
+                connections = host.connectionsTo(other_host)
+                if connections:  # If there is a connection
+                    link_cost = random.randint(1, 10)  # Link cost (replace with actual cost if available)
+                    neighbors.append((other_host, link_cost))
         return neighbors
 
     def calculate_shortest_path(self, source):
         """ Calculate the shortest paths from the source to all other hosts using Dijkstra's algorithm """
-        # Initialize distances and previous nodes
         distances = {host: float('inf') for host in self.network.hosts}
         previous_nodes = {host: None for host in self.network.hosts}
         distances[source] = 0
@@ -110,7 +110,6 @@ class SpfRouting:
         while unvisited_hosts:
             current_distance, current_host = heapq.heappop(unvisited_hosts)
 
-            # Skip if this host has already been visited
             if current_distance > distances[current_host]:
                 continue
 
@@ -129,7 +128,6 @@ class SpfRouting:
         distances, previous_nodes = self.calculate_shortest_path(host)
         routing_table = {}
         for destination, distance in distances.items():
-            # Determine the next hop by following the previous nodes
             if destination != host:
                 next_hop = destination
                 while previous_nodes[next_hop] and previous_nodes[next_hop] != host:
@@ -144,7 +142,6 @@ class SpfRouting:
             for dest, info in self.routing_tables[host].items():
                 next_hop = info.get('next_hop', 'N/A')
                 distance = info.get('distance', 'N/A')
-                # If next_hop is a Host object, extract its name and IP
                 if isinstance(next_hop, Host):
                     next_hop_name = next_hop.name
                     next_hop_ip = next_hop.IP()
@@ -153,7 +150,7 @@ class SpfRouting:
                     next_hop_ip = 'N/A'
                 print("  Destination: {} ({}), Next Hop: {} ({}), Distance: {}".format(
                     dest.name, dest.IP(), next_hop_name, next_hop_ip, distance))
-            print()  # Add a newline between each host's routing table
+            print()
 
     def run(self):
         """ Simulate the SPF (Dijkstra) algorithm for each host in the network """
