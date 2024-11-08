@@ -2,6 +2,7 @@
 import time
 import random
 from mininet.node import Host
+from scapy.all import send, IP, ICMP
 
 class DistanceVectorRouting:
     def __init__(self, network):
@@ -84,3 +85,45 @@ class LinkStateRouting:
         self.print_routing_table()
         print("Link State routing tables updated.")
 
+class FloodingRouting:
+    def __init__(self, network):
+        self.network = network
+        self.visited = {}  # Dictionary to track visited hosts
+
+    def send_packet(self, source, dest, packet, ttl=10):
+        """
+        Flood the packet through the network, sending it to all neighbors
+        except the source (to prevent loops).
+        """
+        self.visited = {}  # Reset visited hosts
+        self._flood(source, dest, packet, ttl)
+
+    def _flood(self, current_host, dest, packet, ttl):
+        """
+        Recursively flood the packet to neighbors until it reaches the destination
+        or the TTL expires.
+        """
+        if ttl <= 0:
+            return
+
+        # Mark the current host as visited to avoid loops
+        self.visited[current_host] = True
+
+        # Check if destination is reached
+        if current_host == dest:
+            print(f"Destination reached: {dest.name}")
+            return
+
+        # Forward the packet to all neighbors
+        for neighbor in current_host.neighbors():
+            if neighbor not in self.visited:
+                # Create a copy of the packet and decrement TTL
+                new_packet = packet.copy()
+                send(new_packet, iface=neighbor.name)
+                print(f"Sending packet from {current_host.name} to {neighbor.name}")
+                self._flood(neighbor, dest, packet, ttl-1)
+
+    def run(self, source, dest, packet):
+        """Start flooding from source to destination."""
+        self.send_packet(source, dest, packet)
+        print("Flooding completed.")
