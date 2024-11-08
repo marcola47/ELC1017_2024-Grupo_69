@@ -186,10 +186,11 @@ class SpfRouting:
         distances = {h: float('inf') for h in self.network.hosts}
         previous_nodes = {h: None for h in self.network.hosts}
         distances[host] = 0
-        pq = [(0, host)]  # priority queue of (distance, node)
+        pq = [(0, host.IP())]  # priority queue of (distance, host_ip)
 
         while pq:
-            current_distance, current_node = heapq.heappop(pq)
+            current_distance, current_host_ip = heapq.heappop(pq)
+            current_node = next(h for h in self.network.hosts if h.IP() == current_host_ip)  # Find the host by IP
 
             # Compare the current node with its neighbors
             for neighbor, weight in graph[current_node].items():
@@ -197,7 +198,7 @@ class SpfRouting:
                 if distance < distances[neighbor]:
                     distances[neighbor] = distance
                     previous_nodes[neighbor] = current_node
-                    heapq.heappush(pq, (distances[neighbor], neighbor))  # Use distance for priority
+                    heapq.heappush(pq, (distances[neighbor], neighbor.IP()))  # Use IP for priority
 
         # Build the routing table based on the shortest paths
         routing_table = {}
