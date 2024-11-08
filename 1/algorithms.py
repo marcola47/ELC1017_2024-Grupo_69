@@ -1,5 +1,6 @@
 # algorithms.py
 import time
+import random
 from mininet.node import Host
 
 class DistanceVectorRouting:
@@ -14,7 +15,7 @@ class DistanceVectorRouting:
         for h in self.network.hosts:
             if h != host:
                 # Here you can implement your distance-vector logic (simplified for this example)
-                routing_table[h] = {'next_hop': h, 'distance': 1}
+                routing_table[h] = {'next_hop': h, 'distance': random.randint(1, 10)}
         self.routing_tables[host] = routing_table
 
     def print_routing_table(self):
@@ -55,7 +56,7 @@ class LinkStateRouting:
         for h in self.network.hosts:
             if h != host:
                 # Simplified for illustration: set direct link distance
-                routing_table[h] = {'next_hop': h, 'distance': 1}
+                routing_table[h] = {'next_hop': h, 'distance': random.randint(1, 10)}
         self.routing_tables[host] = routing_table
 
     def run(self):
