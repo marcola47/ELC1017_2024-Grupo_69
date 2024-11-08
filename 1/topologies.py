@@ -28,9 +28,8 @@ class RingTopo(Topo):
         for i in range(4):
             self.addLink(hosts[i], switches[i])
             self.addLink(switches[i], switches[i + 1])
-        self.addLink(hosts[4], switches[4])
         
-        # Create ring connections
+        self.addLink(hosts[4], switches[4])
         self.addLink(switches[4], switches[0])
 
 class StarTopo(Topo):
