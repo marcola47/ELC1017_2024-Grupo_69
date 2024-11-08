@@ -3,12 +3,12 @@ import argparse
 from mininet.net import Mininet
 from mininet.node import Controller
 from topologies import LineTopo, RingTopo, StarTopo, MeshTopo, HybridTopo
-from algorithms import DistanceVectorRouting, LinkStateRouting, FloodingRouting
+from algorithms import DistanceVectorRouting, LinkStateRouting, SpfRouting
 
 def main():
     parser = argparse.ArgumentParser(description="Network Topology and Routing Algorithm Simulation")
     parser.add_argument("-t", "--topology", choices=['line', 'ring', 'star', 'mesh', 'hybrid'], required=True, help="Topology type")
-    parser.add_argument("-a", "--algorithm", choices=['distance-vector', 'link-state', 'flooding'], required=True, help="Routing algorithm")
+    parser.add_argument("-a", "--algorithm", choices=['distance-vector', 'link-state', 'spf'], required=True, help="Routing algorithm")
 
     args = parser.parse_args()
 
@@ -33,8 +33,8 @@ def main():
         algorithm = DistanceVectorRouting(net)
     elif args.algorithm == 'link-state':
         algorithm = LinkStateRouting(net)
-    elif args.algorithm == 'flooding':
-        algorithm = FloodingRouting(net)
+    elif args.algorithm == 'spf':
+        algorithm = SpfRouting(net)
 
     # Run the selected routing algorithm
     algorithm.run()

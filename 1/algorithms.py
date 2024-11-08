@@ -1,8 +1,8 @@
 # algorithms.py
 import time
 import random
+import heapq
 from mininet.node import Host
-from scapy.all import send, IP, ICMP
 
 class DistanceVectorRouting:
     def __init__(self, network):
@@ -85,45 +85,81 @@ class LinkStateRouting:
         self.print_routing_table()
         print("Link State routing tables updated.")
 
-class FloodingRouting:
+class SpfRouting:
     def __init__(self, network):
         self.network = network
-        self.visited = {}  # Dictionary to track visited hosts
+        self.routing_tables = {}
 
-    def send_packet(self, source, dest, packet, ttl=10):
-        """
-        Flood the packet through the network, sending it to all neighbors
-        except the source (to prevent loops).
-        """
-        self.visited = {}  # Reset visited hosts
-        self._flood(source, dest, packet, ttl)
+    def get_neighbors(self, host):
+        """ Get neighbors of a host and their link costs """
+        neighbors = []
+        for neighbor in host.neighbors():
+            # Assume random distances for simplicity. Replace with real link costs if available
+            link_cost = random.randint(1, 10)  # Link cost
+            neighbors.append((neighbor, link_cost))
+        return neighbors
 
-    def _flood(self, current_host, dest, packet, ttl):
-        """
-        Recursively flood the packet to neighbors until it reaches the destination
-        or the TTL expires.
-        """
-        if ttl <= 0:
-            return
+    def calculate_shortest_path(self, source):
+        """ Calculate the shortest paths from the source to all other hosts using Dijkstra's algorithm """
+        # Initialize distances and previous nodes
+        distances = {host: float('inf') for host in self.network.hosts}
+        previous_nodes = {host: None for host in self.network.hosts}
+        distances[source] = 0
+        unvisited_hosts = [(0, source)]  # (distance, host)
 
-        # Mark the current host as visited to avoid loops
-        self.visited[current_host] = True
+        # Min-heap priority queue for the unvisited hosts
+        heapq.heapify(unvisited_hosts)
 
-        # Check if destination is reached
-        if current_host == dest:
-            print("Destination reached: {} ({})".format(dest.name, dest.IP()))
-            return
+        while unvisited_hosts:
+            current_distance, current_host = heapq.heappop(unvisited_hosts)
+            
+            # Skip if this host has already been visited
+            if current_distance > distances[current_host]:
+                continue
 
-        # Forward the packet to all neighbors
-        for neighbor in current_host.neighbors():
-            if neighbor not in self.visited:
-                # Create a copy of the packet and decrement TTL
-                new_packet = packet.copy()
-                send(new_packet, iface=neighbor.name)
-                print("Sending packet from {} to {} ({})".format(current_host.name, neighbor.name, neighbor.IP()))
-                self._flood(neighbor, dest, packet, ttl-1)
+            # Get neighbors and update their distances
+            for neighbor, link_cost in self.get_neighbors(current_host):
+                new_distance = current_distance + link_cost
+                if new_distance < distances[neighbor]:
+                    distances[neighbor] = new_distance
+                    previous_nodes[neighbor] = current_host
+                    heapq.heappush(unvisited_hosts, (new_distance, neighbor))
 
-    def run(self, source, dest, packet):
-        """Start flooding from source to destination."""
-        self.send_packet(source, dest, packet)
-        print("Flooding completed.")
+        return distances, previous_nodes
+
+    def update_routing_table(self, host):
+        """ Update the routing table for the host based on the SPF algorithm """
+        distances, previous_nodes = self.calculate_shortest_path(host)
+        routing_table = {}
+        for destination, distance in distances.items():
+            # Determine the next hop by following the previous nodes
+            if destination != host:
+                next_hop = destination
+                while previous_nodes[next_hop] and previous_nodes[next_hop] != host:
+                    next_hop = previous_nodes[next_hop]
+                routing_table[destination] = {'next_hop': next_hop, 'distance': distance}
+        self.routing_tables[host] = routing_table
+
+    def print_routing_table(self):
+        """ Print the routing table for each host in a human-readable format """
+        for host in self.network.hosts:
+            print(f"Routing table for {host.name} ({host.IP()}):")
+            for dest, info in self.routing_tables[host].items():
+                next_hop = info.get('next_hop', 'N/A')
+                distance = info.get('distance', 'N/A')
+                # If next_hop is a Host object, extract its name and IP
+                if isinstance(next_hop, Host):
+                    next_hop_name = next_hop.name
+                    next_hop_ip = next_hop.IP()
+                else:
+                    next_hop_name = next_hop
+                    next_hop_ip = 'N/A'
+                print(f"  Destination: {dest.name} ({dest.IP()}), Next Hop: {next_hop_name} ({next_hop_ip}), Distance: {distance}")
+            print()  # Add a newline between each host's routing table
+
+    def run(self):
+        """ Simulate the SPF (Dijkstra) algorithm for each host in the network """
+        for host in self.network.hosts:
+            self.update_routing_table(host)
+        self.print_routing_table()
+        print("SPF (Dijkstra) routing tables updated.")
