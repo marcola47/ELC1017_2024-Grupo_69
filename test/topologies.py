@@ -9,6 +9,9 @@ class ScapyHost(Host):
         self.cmd('sysctl -w net.ipv4.ip_forward=1')  # Enable IP forwarding
         self.cmd('sysctl -w net.ipv6.conf.all.disable_ipv6=1')  # Disable IPv6
         self.cmd('sysctl -w net.ipv6.conf.default.disable_ipv6=1')  # Disable IPv6 on default interfaces
+        
+        # Manually set default route for IPv4
+        self.cmd('ip route add default via 10.0.0.1')  # Replace with the gateway IP
 
     def send_packet(self, dest_ip):
         # Create and send a UDP packet using Scapy
