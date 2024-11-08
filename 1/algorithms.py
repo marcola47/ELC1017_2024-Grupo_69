@@ -91,7 +91,7 @@ class SpfRouting:
     def get_neighbors(self, host):
         """ Get neighbors of a host and their link costs """
         neighbors = []
-        for link in host.connections():
+        for link in host.connectionsTo():
             # Get the connected host from the link
             neighbor = link[0] if link[1] == host else link[1]
             # Assume random distances for simplicity. Replace with real link costs if available
