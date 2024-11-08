@@ -17,11 +17,29 @@ class DistanceVectorRouting:
                 routing_table[h] = {'next_hop': h, 'distance': 1}
         self.routing_tables[host] = routing_table
 
+    def print_routing_table(self):
+        """ Print the routing table for each host in a human-readable format """
+        for host in self.network.hosts:
+            print("Routing table for {} ({}):".format(host.name, host.IP()))
+            for dest, info in self.routing_tables[host].items():
+                next_hop = info.get('next_hop', 'N/A')
+                distance = info.get('distance', 'N/A')
+                # If next_hop is a Host object, extract its name and IP
+                if isinstance(next_hop, Host):
+                    next_hop_name = next_hop.name
+                    next_hop_ip = next_hop.IP()
+                else:
+                    next_hop_name = next_hop
+                    next_hop_ip = 'N/A'
+                print("  Destination: {} ({}), Next Hop: {} ({}), Distance: {}".format(
+                    dest.name, dest.IP(), next_hop_name, next_hop_ip, distance))
+            print()  # Add a newline between each host's routing table
+
     def run(self):
         """Simulate Distance Vector algorithm for each host"""
         for host in self.network.hosts:
             self.update_routing_table(host)
-            print("Routing table for {}: {}\n".format(host.name, self.routing_tables[host]))
+            self.print_routing_table()
         print("Distance Vector routing tables updated.")
 
 
