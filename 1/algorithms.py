@@ -91,7 +91,9 @@ class SpfRouting:
     def get_neighbors(self, host):
         """ Get neighbors of a host and their link costs """
         neighbors = []
-        for neighbor in host.neighbors():
+        for link in host.connections():
+            # Get the connected host from the link
+            neighbor = link[0] if link[1] == host else link[1]
             # Assume random distances for simplicity. Replace with real link costs if available
             link_cost = random.randint(1, 10)  # Link cost
             neighbors.append((neighbor, link_cost))
@@ -100,11 +102,8 @@ class SpfRouting:
     def calculate_shortest_path(self, source):
         """ Calculate the shortest paths from the source to all other hosts using Dijkstra's algorithm """
         # Initialize distances and previous nodes
-        distances = {}
-        previous_nodes = {}
-        for host in self.network.hosts:
-            distances[host] = float('inf')
-            previous_nodes[host] = None
+        distances = {host: float('inf') for host in self.network.hosts}
+        previous_nodes = {host: None for host in self.network.hosts}
         distances[source] = 0
         unvisited_hosts = [(0, source)]  # (distance, host)
 
