@@ -1,0 +1,84 @@
+# topologies.py
+from mininet.topo import Topo
+from mininet.net import Mininet
+from mininet.node import Controller, OVSKernelSwitch
+from mininet.cli import CLI
+from mininet.log import setLogLevel
+
+class LineTopo(Topo):
+    def build(self):
+        # Create a linear topology
+        switches = [self.addSwitch('s{}'.format(i)) for i in range(1, 6)]
+        hosts = [self.addHost('h{}'.format(i)) for i in range(1, 6)]
+        
+        # Connect hosts to switches
+        for i in range(4):
+            self.addLink(hosts[i], switches[i])
+            self.addLink(switches[i], switches[i + 1])
+        self.addLink(hosts[4], switches[4])
+
+class RingTopo(Topo):
+    def build(self):
+        # Create a ring topology
+        switches = [self.addSwitch('s{}'.format(i)) for i in range(1, 6)]
+        hosts = [self.addHost('h{}'.format(i)) for i in range(1, 6)]
+        
+        # Connect hosts to switches
+        for i in range(4):
+            self.addLink(hosts[i], switches[i])
+            self.addLink(switches[i], switches[i + 1])
+        self.addLink(hosts[4], switches[4])
+        
+        # Create ring connections
+        self.addLink(switches[4], switches[0])
+
+class StarTopo(Topo):
+    def build(self):
+        # Create a star topology
+        switch = self.addSwitch('s1')
+        hosts = [self.addHost('h{}'.format(i)) for i in range(1, 6)]
+        
+        # Connect hosts to the central switch
+        for host in hosts:
+            self.addLink(host, switch)
+
+class MeshTopo(Topo):
+    def build(self):
+        # Create a mesh topology (fully connected)
+        switches = [self.addSwitch('s{}'.format(i)) for i in range(1, 6)]
+        hosts = [self.addHost('h{}'.format(i)) for i in range(1, 6)]
+        
+        # Connect hosts to switches
+        for i in range(5):
+            self.addLink(hosts[i], switches[i])
+        
+        # Fully connect the switches
+        for i in range(5):
+            for j in range(i+1, 5):
+                self.addLink(switches[i], switches[j])
+
+class HybridTopo(Topo):
+    def build(self):
+        # Hybrid topology: combine a star and a mesh
+        switches = [self.addSwitch('s{}'.format(i)) for i in range(1, 6)]
+        hosts = [self.addHost('h{}'.format(i)) for i in range(1, 6)]
+        
+        # Star part
+        center_switch = self.addSwitch('s1')
+        for host in hosts:
+            self.addLink(host, center_switch)
+        
+        # Mesh part
+        for i in range(5):
+            for j in range(i+1, 5):
+                self.addLink(switches[i], switches[j])
+
+def create_network(topology):
+    """Creates and returns the network based on the topology."""
+    net = Mininet(topo=topology, controller=Controller, switch=OVSKernelSwitch)
+    net.start()
+    CLI(net)
+    net.stop()
+
+if __name__ == '__main__':
+    setLogLevel('info')
