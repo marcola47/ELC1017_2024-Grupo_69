@@ -1,5 +1,3 @@
-# algorithms.py
-import time
 import random
 import heapq
 from mininet.node import Host
@@ -102,17 +100,17 @@ class SpfRouting:
     def calculate_shortest_path(self, source):
         """ Calculate the shortest paths from the source to all other hosts using Dijkstra's algorithm """
         # Initialize distances and previous nodes
-        distances = {host: float('inf') for host in self.network.hosts}
-        previous_nodes = {host: None for host in self.network.hosts}
+        distances = {}
+        previous_nodes = {}
+        for host in self.network.hosts:
+            distances[host] = float('inf')
+            previous_nodes[host] = None
         distances[source] = 0
         unvisited_hosts = [(0, source)]  # (distance, host)
 
-        # Min-heap priority queue for the unvisited hosts
-        heapq.heapify(unvisited_hosts)
-
         while unvisited_hosts:
             current_distance, current_host = heapq.heappop(unvisited_hosts)
-            
+
             # Skip if this host has already been visited
             if current_distance > distances[current_host]:
                 continue
@@ -143,7 +141,7 @@ class SpfRouting:
     def print_routing_table(self):
         """ Print the routing table for each host in a human-readable format """
         for host in self.network.hosts:
-            print(f"Routing table for {host.name} ({host.IP()}):")
+            print("Routing table for {} ({}):".format(host.name, host.IP()))
             for dest, info in self.routing_tables[host].items():
                 next_hop = info.get('next_hop', 'N/A')
                 distance = info.get('distance', 'N/A')
@@ -154,7 +152,8 @@ class SpfRouting:
                 else:
                     next_hop_name = next_hop
                     next_hop_ip = 'N/A'
-                print(f"  Destination: {dest.name} ({dest.IP()}), Next Hop: {next_hop_name} ({next_hop_ip}), Distance: {distance}")
+                print("  Destination: {} ({}), Next Hop: {} ({}), Distance: {}".format(
+                    dest.name, dest.IP(), next_hop_name, next_hop_ip, distance))
             print()  # Add a newline between each host's routing table
 
     def run(self):
