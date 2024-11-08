@@ -111,7 +111,7 @@ class FloodingRouting:
 
         # Check if destination is reached
         if current_host == dest:
-            print(f"Destination reached: {dest.name}")
+            print("Destination reached: {} ({})".format(dest.name, dest.IP()))
             return
 
         # Forward the packet to all neighbors
@@ -120,7 +120,7 @@ class FloodingRouting:
                 # Create a copy of the packet and decrement TTL
                 new_packet = packet.copy()
                 send(new_packet, iface=neighbor.name)
-                print(f"Sending packet from {current_host.name} to {neighbor.name}")
+                print("Sending packet from {} to {} ({})".format(current_host.name, neighbor.name, neighbor.IP()))
                 self._flood(neighbor, dest, packet, ttl-1)
 
     def run(self, source, dest, packet):
