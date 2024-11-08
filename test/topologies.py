@@ -6,7 +6,9 @@ from scapy.all import sendp, Ether, IP, UDP
 class ScapyHost(Host):
     def config(self, **params):
         super(ScapyHost, self).config(**params)
-        self.cmd('sysctl -w net.ipv4.ip_forward=1')
+        self.cmd('sysctl -w net.ipv4.ip_forward=1')  # Enable IP forwarding
+        self.cmd('sysctl -w net.ipv6.conf.all.disable_ipv6=1')  # Disable IPv6
+        self.cmd('sysctl -w net.ipv6.conf.default.disable_ipv6=1')  # Disable IPv6 on default interfaces
 
     def send_packet(self, dest_ip):
         # Create and send a UDP packet using Scapy
