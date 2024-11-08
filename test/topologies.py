@@ -19,7 +19,7 @@ class LineTopology(Topo):
     def build(self):
         # Create 3 switches and 3 hosts in a line topology
         switches = [self.addSwitch('s{}'.format(i)) for i in range(1, 4)]
-        hosts = [self.addHost('h{}'.format(i), cls=ScapyHost) for i in range(1, 4)]
+        hosts = [self.addHost('h{}'.format(i), cls=ScapyHost, ip='10.0.0.{}'.format(i)) for i in range(1, 4)]
         
         # Connect hosts and switches in a line configuration
         self.addLink(hosts[0], switches[0])
@@ -31,7 +31,7 @@ class RingTopology(Topo):
     def build(self):
         # Create 3 switches and 3 hosts in a ring topology
         switches = [self.addSwitch('s{}'.format(i)) for i in range(1, 4)]
-        hosts = [self.addHost('h{}'.format(i), cls=ScapyHost) for i in range(1, 4)]
+        hosts = [self.addHost('h{}'.format(i), cls=ScapyHost, ip='10.0.0.{}'.format(i)) for i in range(1, 4)]
 
         # Connect hosts to switches
         for i in range(3):
@@ -45,7 +45,7 @@ class StarTopology(Topo):
     def build(self):
         # Create one central switch and 3 peripheral hosts
         center_switch = self.addSwitch('s1')
-        hosts = [self.addHost('h{}'.format(i), cls=ScapyHost) for i in range(1, 4)]
+        hosts = [self.addHost('h{}'.format(i), cls=ScapyHost, ip='10.0.0.{}'.format(i)) for i in range(1, 4)]
         
         # Connect each host to the central switch
         for host in hosts:
