@@ -30,7 +30,7 @@ def main():
     
     # Set up topology
     topology = create_topology(args.topology)
-    topology.build(net)
+    topology.build()
     
     # Choose the routing algorithm
     if args.algorithm == 'distance-vector':
