@@ -8,14 +8,15 @@ from mininet.log import setLogLevel
 class LineTopo(Topo):
     def build(self):
         # Create a linear topology
-        switches = [self.addSwitch('s{}'.format(i)) for i in range(1, 6)]
-        hosts = [self.addHost('h{}'.format(i)) for i in range(1, 6)]
+        switches = [self.addSwitch('s{}'.format(i)) for i in range(1, 5)]  # 4 switches
+        hosts = [self.addHost('h{}'.format(i)) for i in range(1, 6)]  # 5 hosts
         
         # Connect hosts to switches
-        for i in range(4):
+        self.addLink(hosts[0], switches[0])  # h1 to s1
+        for i in range(1, 4):  # Connect switches in a line and hosts to them
+            self.addLink(switches[i - 1], switches[i])
             self.addLink(hosts[i], switches[i])
-            self.addLink(switches[i], switches[i + 1])
-        self.addLink(hosts[4], switches[4])
+        self.addLink(switches[3], hosts[4])  # Connect s4 to h5
 
 class RingTopo(Topo):
     def build(self):
