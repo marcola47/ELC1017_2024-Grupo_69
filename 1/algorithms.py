@@ -39,7 +39,7 @@ class DistanceVectorRouting:
         """Simulate Distance Vector algorithm for each host"""
         for host in self.network.hosts:
             self.update_routing_table(host)
-            self.print_routing_table()
+        self.print_routing_table()
         print("Distance Vector routing tables updated.")
 
 
