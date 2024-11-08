@@ -190,12 +190,14 @@ class SpfRouting:
 
         while pq:
             current_distance, current_node = heapq.heappop(pq)
+
+            # Compare the current node with its neighbors
             for neighbor, weight in graph[current_node].items():
                 distance = current_distance + weight
                 if distance < distances[neighbor]:
                     distances[neighbor] = distance
                     previous_nodes[neighbor] = current_node
-                    heapq.heappush(pq, (distance, neighbor))
+                    heapq.heappush(pq, (distances[neighbor], neighbor))  # Use distance for priority
 
         # Build the routing table based on the shortest paths
         routing_table = {}
